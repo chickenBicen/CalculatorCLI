@@ -10,17 +10,29 @@
 #include <string>
 #include <cmath>
 
-enum class Assoc { Left, Right };
+enum class Assoc {
+    Left,
+    Right
+};
 
 Assoc getAssociativity(const Token &t) {
-    if (t.getValue() == "^") { return Assoc::Right; } else { return Assoc::Left; }
+    if (t.getValue() == "^") {
+        return Assoc::Right;
+    } else {
+        return Assoc::Left;
+    }
 }
 
 int getPrecedence(const Token &t) {
-    if (t.getType() != TokenType::Operator) { return 0; }
-    if (t.getValue() == "+" || t.getValue() == "-") return 1;
-    if (t.getValue() == "*" || t.getValue() == "/") return 2;
-    if (t.getValue() == "^") return 3;
+    if (t.getType() != TokenType::Operator) {
+        return 0;
+    }
+    if (t.getValue() == "+" || t.getValue() == "-")
+        return 1;
+    if (t.getValue() == "*" || t.getValue() == "/")
+        return 2;
+    if (t.getValue() == "^")
+        return 3;
     return 0;
 }
 
@@ -68,8 +80,7 @@ void Parser::checkOperators() const {
 
 bool associativityCheck(const Token &t, std::stack<Token> &operatorStack) {
     return ((getAssociativity(t) == Assoc::Left && getPrecedence(operatorStack.top()) >= getPrecedence(t)) ||
-            (getAssociativity(t) == Assoc::Right &&getPrecedence(operatorStack.top()) > getPrecedence(t)));
-
+            (getAssociativity(t) == Assoc::Right && getPrecedence(operatorStack.top()) > getPrecedence(t)));
 }
 
 std::vector<Token> Parser::parse() const {
@@ -85,9 +96,7 @@ std::vector<Token> Parser::parse() const {
             output.push_back(t);
             if (tokens[i - 1].getType() == TokenType::RightParen) {
                 output.push_back(Token(TokenType::Operator, "*"));
-            }
-
-            else if (tokens[i + 1].getType() == TokenType::LeftParen) {
+            } else if (tokens[i + 1].getType() == TokenType::LeftParen) {
                 operatorStack.emplace(TokenType::Operator, "*");
             }
 
@@ -98,14 +107,11 @@ std::vector<Token> Parser::parse() const {
             if (tokens[i + 1].getType() == TokenType::Constant) {
                 operatorStack.emplace(TokenType::Operator, "*");
             }
-        }
-        else if (t.getType() == TokenType::Function) {
+        } else if (t.getType() == TokenType::Function) {
             operatorStack.push(t);
-        }
-        else if (t.getType() == TokenType::LeftParen) {
+        } else if (t.getType() == TokenType::LeftParen) {
             operatorStack.push(t);
-        }
-        else if (t.getType() == TokenType::RightParen) {
+        } else if (t.getType() == TokenType::RightParen) {
             while (!operatorStack.empty() &&
                    operatorStack.top().getType() != TokenType::LeftParen) {
                 output.push_back(operatorStack.top());
@@ -124,16 +130,14 @@ std::vector<Token> Parser::parse() const {
                 output.push_back(operatorStack.top());
                 operatorStack.pop();
             }
-        }
-        else if (t.getType() == TokenType::Operator) {
+        } else if (t.getType() == TokenType::Operator) {
             while (!operatorStack.empty() && associativityCheck(t, operatorStack)) {
                 output.push_back(operatorStack.top());
                 operatorStack.pop();
             }
 
             operatorStack.push(t);
-        }
-        else {
+        } else {
             throw ParseError("Unknown token in parser");
         }
     }
