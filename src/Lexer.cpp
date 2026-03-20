@@ -4,10 +4,16 @@
 
 #include "../include/Lexer.h"
 
-
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
+#include <unordered_map>
+
+
+std::unordered_map<std::string, double> constants{
+        {"pi", 3.141592653589793},
+        {"e",  2.718281828459045}
+};
 
 Token Lexer::nextToken() {
     std::string num;
@@ -41,6 +47,12 @@ Token Lexer::nextToken() {
 
             if (isNegative) num = "-" + num;
             lastToken = Token(TokenType::Number, num); //token is now the token that we made with the numbers obviously
+            return lastToken;
+        }
+
+        if (line.substr(pos, 2) == "pi") {
+            pos += 2;
+            lastToken = Token(TokenType::Constant, constants["pi"]);
             return lastToken;
         }
 

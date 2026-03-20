@@ -81,7 +81,7 @@ std::vector<Token> Parser::parse() const {
 
     for (int i = 0; i < tokens.size(); i++) {
         Token t = tokens[i];
-        if (t.getType() == TokenType::Number) {
+        if (t.getType() == TokenType::Number || t.getType() == TokenType::Constant) {
             output.push_back(t);
             if (tokens[i - 1].getType() == TokenType::RightParen) {
                 output.push_back(Token(TokenType::Operator, "*"));

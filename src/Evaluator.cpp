@@ -7,16 +7,16 @@
 #include <cmath>
 #include <stack>
 #include<string>
+#include <unordered_map>
 
 #include "../Custom_Errors.h"
-
 
 double Evaluator::evaluate(std::vector<Token> tokens) {
     std::stack<Token> tokenStack;
 
     for (Token t : tokens) {
 
-        if (t.getType() == TokenType::Number) {
+        if (t.getType() == TokenType::Number || t.getType() == TokenType::Constant) {
             tokenStack.push(t);
             continue;
         }

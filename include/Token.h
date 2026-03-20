@@ -7,9 +7,11 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 enum class TokenType {
-    Number, Operator, Function, LeftParen, RightParen, End, None
+    Number, Constant,Operator, Function, LeftParen, RightParen, End, None
 };
 
 class Token {
@@ -26,7 +28,11 @@ public:
         }
     }
 
-    Token(TokenType t, double v) : type(t), numberValue(v), value(std::to_string(v)) {}
+    Token(TokenType t, double v) : type(t), numberValue(v) {
+        std::ostringstream oss;
+        oss << std::setprecision(15) << v;
+        value = oss.str();
+    }
 
     [[nodiscard]] TokenType getType() const { return type; }
     [[nodiscard]] std::string getValue() const { return value; }
