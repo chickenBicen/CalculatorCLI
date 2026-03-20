@@ -87,6 +87,17 @@ std::vector<Token> Parser::parse() const {
                 output.push_back(Token(TokenType::Operator, "*"));
             }
 
+            else if (tokens[i + 1].getType() == TokenType::LeftParen) {
+                operatorStack.emplace(TokenType::Operator, "*");
+            }
+
+            if (t.getType() == TokenType::Constant) {
+                continue;
+            }
+
+            if (tokens[i + 1].getType() == TokenType::Constant) {
+                operatorStack.emplace(TokenType::Operator, "*");
+            }
         }
         else if (t.getType() == TokenType::Function) {
             operatorStack.push(t);

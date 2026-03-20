@@ -6,7 +6,7 @@
 
 // TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
-    Lexer lexer("(2 + 4)2");
+    Lexer lexer("2pi");
     Parser parser(lexer.tokenizeAll());
     Evaluator evaluator{};
     for (Token t: lexer.tokenizeAll()) {
@@ -26,5 +26,5 @@ int main() {
 
     std::cout << "\n";
 
-    std::cout << evaluator.evaluate(parser.parse());
+    std::cout << std::setprecision(15)<<evaluator.evaluate(parser.parse());
 }
