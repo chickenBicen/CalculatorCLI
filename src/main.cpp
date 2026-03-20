@@ -20,11 +20,11 @@ int main() {
 
     std::cout << "\n";
 
-    for (Token t : parser.parse()) {
+    for (Token t: parser.parse()) {
         std::cout << t;
     }
 
     std::cout << "\n";
 
-    std::cout << std::setprecision(15)<<evaluator.evaluate(parser.parse());
+    std::cout << std::setprecision(15) << evaluator.evaluate(parser.parse());
 }

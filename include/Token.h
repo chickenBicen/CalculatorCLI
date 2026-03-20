@@ -11,7 +11,7 @@
 #include <sstream>
 
 enum class TokenType {
-    Number, Constant,Operator, Function, LeftParen, RightParen, End, None
+    Number, Constant, Operator, Function, LeftParen, RightParen, End, None
 };
 
 class Token {

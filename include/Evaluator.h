@@ -9,8 +9,9 @@
 #include "Token.h"
 
 class Evaluator {
-    public:
-    Evaluator()= default;
+public:
+    Evaluator() = default;
+
     double evaluate(std::vector<Token> tokens);
 };
 
