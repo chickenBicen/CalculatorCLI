@@ -56,6 +56,12 @@ Token Lexer::nextToken() {
             return lastToken;
         }
 
+        if (line.substr(pos, 1) == "e") {
+            pos += 1;
+            lastToken = Token(TokenType::Constant, constants["e"]);
+            return lastToken;
+        }
+
         // Functions
         if (line.substr(pos, 4) == "sqrt") {
             pos += 4;
@@ -72,6 +78,12 @@ Token Lexer::nextToken() {
         if (line.substr(pos, 3) == "cos") {
             pos += 3;
             lastToken = Token(TokenType::Function, "cos");
+            return lastToken;
+        }
+
+        if (line.substr(pos, 3) == "log") {
+            pos += 3;
+            lastToken = Token(TokenType::Function, "log");
             return lastToken;
         }
 

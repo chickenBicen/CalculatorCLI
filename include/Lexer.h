@@ -16,6 +16,7 @@ private:
     Token lastToken;
 
 public:
+
     explicit Lexer(const std::string &input) : line(input), pos(0), lastToken(TokenType::None, "") {
     };
 

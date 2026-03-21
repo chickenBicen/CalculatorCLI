@@ -4,6 +4,8 @@
 
 #ifndef CALC_EVALUATOR_H
 #define CALC_EVALUATOR_H
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "Token.h"
@@ -13,6 +15,7 @@ public:
     Evaluator() = default;
 
     double evaluate(std::vector<Token> tokens);
+
 };
 
 #endif //CALC_EVALUATOR_H

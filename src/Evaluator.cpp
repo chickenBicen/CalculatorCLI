@@ -8,8 +8,17 @@
 #include <stack>
 #include<string>
 #include <unordered_map>
+#include <functional>
 
 #include "../Custom_Errors.h"
+
+std::unordered_map<std::string, std::function<double(double)>> functions = {
+    {"sqrt", sqrt},
+    {"sin", sin},
+    {"cos", cos},
+    {"log", log},
+    {"log10", log10}
+};
 
 double Evaluator::evaluate(std::vector<Token> tokens) {
     std::stack<Token> tokenStack;
@@ -39,21 +48,9 @@ double Evaluator::evaluate(std::vector<Token> tokens) {
             }
         }
         if (t.getType() == TokenType::Function) {
-            if (t.getValue() == "sqrt") {
-                double a = tokenStack.top().getNumberValue();
-                tokenStack.pop();
-                tokenStack.emplace(TokenType::Number, sqrt(a));
-            }
-
-            if (t.getValue() == "sin") {
-                double a = tokenStack.top().getNumberValue();
-                tokenStack.pop();
-                tokenStack.emplace(TokenType::Number, sin(a));
-            } else if (t.getValue() == "cos") {
-                double a = tokenStack.top().getNumberValue();
-                tokenStack.pop();
-                tokenStack.emplace(TokenType::Number, cos(a));
-            }
+            double a = tokenStack.top().getNumberValue();
+            tokenStack.pop();
+            tokenStack.emplace(TokenType::Number, functions[t.getValue()](a));
         }
     }
     return tokenStack.top().getNumberValue();
