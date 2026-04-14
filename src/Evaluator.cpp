@@ -12,6 +12,8 @@
 
 #include "../Custom_Errors.h"
 
+double Evaluator::lastAnswer = 0.0;
+
 std::unordered_map<std::string, std::function<double(double)>> functions = {
     {"sqrt", sqrt},
     {"sin", sin},
@@ -53,5 +55,6 @@ double Evaluator::evaluate(std::vector<Token> tokens) {
             tokenStack.emplace(TokenType::Number, functions[t.getValue()](a));
         }
     }
+    lastAnswer = tokenStack.top().getNumberValue();
     return tokenStack.top().getNumberValue();
 }
