@@ -87,13 +87,18 @@ Token Lexer::nextToken() {
             return lastToken;
         }
 
+        if (line.substr(pos, 2) == "ln") {
+            pos += 2;
+            lastToken = Token(TokenType::Function, "ln");
+            return lastToken;
+        }
+
         // Operators
-        if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+        if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '%') {
             pos++;
             lastToken = Token(TokenType::Operator, std::string(1, c));
             return lastToken;
         }
-
         // Parentheses
         if (c == '(') {
             pos++;
