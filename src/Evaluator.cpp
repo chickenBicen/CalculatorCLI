@@ -18,8 +18,8 @@ std::unordered_map<std::string, std::function<double(double)>> functions = {
     {"sqrt", sqrt},
     {"sin", sin},
     {"cos", cos},
-    {"log", log},
-    {"log10", log10}
+    {"log", log10},
+    {"ln", log}
 };
 
 double Evaluator::evaluate(std::vector<Token> tokens) {
@@ -47,6 +47,9 @@ double Evaluator::evaluate(std::vector<Token> tokens) {
                 tokenStack.emplace(TokenType::Number, b / a);
             } else if (t.getValue() == "^") {
                 tokenStack.emplace(TokenType::Number, pow(b, a));
+            } else if (t.getValue() == "%") {
+                tokenStack.emplace(TokenType::Number, static_cast<double>(static_cast<int>(b) %
+                                                     static_cast<int>(a)));
             }
         }
         if (t.getType() == TokenType::Function) {
