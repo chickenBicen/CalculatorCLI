@@ -42,7 +42,7 @@ public:
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Token &t) {
-    os << "Token(" << t.value << ")";
+    os << t.value;
     return os;
 }
 
