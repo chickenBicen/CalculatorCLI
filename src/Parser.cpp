@@ -92,6 +92,12 @@ std::vector<Token> Parser::parse() const {
 
     for (int i = 0; i < tokens.size(); i++) {
         Token t = tokens[i];
+        if (i == 0 && t.getType() == TokenType::Operator && Evaluator::lastAnswer == 0.0) {
+            throw ParseError("Start with operator error");
+        }
+        if (i == 0 && t.getType() == TokenType::Operator) {
+            output.push_back(Token(TokenType::Number,Evaluator::lastAnswer));
+        }
         if (t.getType() == TokenType::Number || t.getType() == TokenType::Constant) {
             output.push_back(t);
             if (tokens[i - 1].getType() == TokenType::RightParen) {
