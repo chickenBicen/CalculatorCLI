@@ -5,6 +5,7 @@
 #include "../include/Parser.h"
 #include "../include/Token.h"
 #include "../Custom_Errors.h"
+#include "../include/Evaluator.h"
 
 #include <iostream>
 #include <string>
@@ -24,15 +25,19 @@ Assoc getAssociativity(const Token &t) {
 }
 
 int getPrecedence(const Token &t) {
+    if (t.getType() == TokenType::Function){return 4;}
+
     if (t.getType() != TokenType::Operator) {
         return 0;
     }
+
     if (t.getValue() == "+" || t.getValue() == "-")
         return 1;
-    if (t.getValue() == "*" || t.getValue() == "/")
+    if (t.getValue() == "*" || t.getValue() == "/" || t.getValue() == "%")
         return 2;
     if (t.getValue() == "^")
         return 3;
+
     return 0;
 }
 
@@ -62,10 +67,6 @@ void Parser::checkOperators() const {
         }
         if (i + 1 < tokens.size() && tokens[i + 1].getType() == TokenType::Operator) {
             throw MathError("MATH ERROR: Consecutive Operators!");
-        }
-
-        if (i == 0) {
-            throw MathError("MATH ERROR: Starting with an Operator doesnt make sense!");
         }
 
         if (i == tokens.size() - 1) {
@@ -102,7 +103,7 @@ std::vector<Token> Parser::parse() const {
             output.push_back(t);
             if (tokens[i - 1].getType() == TokenType::RightParen) {
                 output.push_back(Token(TokenType::Operator, "*"));
-            } else if (tokens[i + 1].getType() == TokenType::LeftParen) {
+            } else if (tokens[i + 1].getType() == TokenType::LeftParen || tokens[i + 1].getType() == TokenType::Function) {
                 operatorStack.emplace(TokenType::Operator, "*");
             }
 
