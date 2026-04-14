@@ -12,6 +12,7 @@
 
 class Evaluator {
 public:
+    static double lastAnswer;
     Evaluator() = default;
 
     double evaluate(std::vector<Token> tokens);
