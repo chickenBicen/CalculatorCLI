@@ -10,13 +10,13 @@
 
 #include "Token.h"
 
-class Evaluator {
-public:
+class Evaluator
+{
+  public:
     static double lastAnswer;
     Evaluator() = default;
 
     double evaluate(std::vector<Token> tokens);
-
 };
 
-#endif //CALC_EVALUATOR_H
+#endif // CALC_EVALUATOR_H

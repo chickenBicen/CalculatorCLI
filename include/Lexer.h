@@ -9,21 +9,20 @@
 
 #include "../include/Token.h"
 
-class Lexer {
-private:
+class Lexer
+{
+  private:
     std::string line;
     size_t pos;
     Token lastToken;
+    std::vector<Token> vectors;
 
-public:
-
-    explicit Lexer(const std::string &input) : line(input), pos(0), lastToken(TokenType::None, "") {
-    };
+  public:
+    explicit Lexer(const std::string &input) : line(input), pos(0), lastToken(TokenType::None, "") {};
 
     Token nextToken();
 
     std::vector<Token> tokenizeAll();
 };
 
-
-#endif //CALC_LEXER_H
+#endif // CALC_LEXER_H

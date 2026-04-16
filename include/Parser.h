@@ -5,24 +5,25 @@
 #ifndef CALC_PARSER_H
 #define CALC_PARSER_H
 
-#include <stack>
 #include "../include/Token.h"
+#include <stack>
 #include <vector>
 
-class Parser {
-public:
-    explicit Parser(const std::vector<Token> &tokens) : tokens(tokens) {
-    };
+class Parser
+{
+  public:
+    explicit Parser(const std::vector<Token> &tokens) : tokens(tokens) {};
 
     void checkParentheses() const;
 
     void checkOperators() const;
 
+    void checkVectorOperations() const;
+
     std::vector<Token> parse() const;
 
-private:
+  private:
     std::vector<Token> tokens;
 };
 
-
-#endif //CALC_PARSER_H
+#endif // CALC_PARSER_H
