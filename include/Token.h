@@ -15,6 +15,7 @@ enum class TokenType
     Number,
     Identifier,
     Equals,
+    Function,
     Operator,
     LeftParen,
     RightParen,

@@ -14,13 +14,68 @@
 
 double Evaluator::lastAnswer = 0.0;
 
-std::unordered_map<std::string, std::function<double(double)>> functions = {
-    {"sqrt", sqrt}, {"sin", sin},     {"cos", cos},     {"log", log10},
-    {"ln", log},    {"arcsin", asin}, {"arccos", acos}, {"arctan", atan}};
+Value makeUnaryFunction(std::function<double(double)> f)
+{
+    return Value{ValueType::Function, 0, [f](const std::vector<double> &args)
+                 {
+                     if (args.size() != 1)
+                         throw MathError("Function expects 1 argument");
+                     return f(args[0]);
+                 }};
+}
 
-std::unordered_map<std::string, double> constants = {{"pi", 3.141592653589793}, {"e", 2.718281828459045}};
+Value makeBinaryFunction(std::function<double(double, double)> f)
+{
+    return Value{ValueType::Function, 0, [f](const std::vector<double> &args)
+                 {
+                     if (args.size() != 2)
+                         throw MathError("Function expects 2 argument");
+                     return f(args[0], args[1]);
+                 }};
+}
 
-double Evaluator::evaluate(std::vector<Token> tokens)
+std::unordered_map<std::string, Value> createEnv()
+{
+    std::unordered_map<std::string, Value> env = {{"pi", Value{ValueType::Number, std::numbers::pi}},
+                                                  {"e", Value{ValueType::Number, std::numbers::e}},
+                                                  {"sqrt", makeUnaryFunction(sqrt)},
+                                                  {"log", makeUnaryFunction(log10)},
+                                                  {"ln", makeUnaryFunction(log)},
+                                                  {"sin", makeUnaryFunction(sin)},
+                                                  {"cos", makeUnaryFunction(cos)},
+                                                  {"tan", makeUnaryFunction(tan)},
+                                                  {"arcsin", makeUnaryFunction(asin)},
+                                                  {"arccos", makeUnaryFunction(acos)},
+                                                  {"arctan", makeUnaryFunction(atan)}};
+
+    env["max"] = Value{ValueType::Function, 0, [](const std::vector<double> &args)
+                       {
+                           if (args.empty())
+                           {
+                               throw MathError("Function expects an argument");
+                           }
+                           double m = args[0];
+                           for (size_t i = 1; i < args.size(); i++)
+                           {
+                               m = std::max(m, args[i]);
+                           }
+                           return m;
+                       }};
+
+    return env;
+}
+
+std::unordered_map<std::string, double> constants = {{"pi", std::numbers::pi}, {"e", std::numbers::e}};
+std::unordered_map<std::string, Value> envr = createEnv();
+
+void checkEnvironment()
+{
+    for (const auto& [key, value] : envr) {
+        std::cout << key << ": " << value.number << std::endl;
+    }
+}
+
+double Evaluator::evaluateRPN(std::vector<Token> tokens)
 {
     std::stack<Token> tokenStack;
 
@@ -33,9 +88,9 @@ double Evaluator::evaluate(std::vector<Token> tokens)
             continue;
         }
 
-        if (constants.find(t.getValue()) != constants.end())
+        if (envr.find(t.getValue()) != envr.end() && envr[t.getValue()].type != ValueType::Function)
         {
-            tokenStack.push(Token(TokenType::Number, constants[t.getValue()]));
+            tokenStack.push(Token(TokenType::Number, envr[t.getValue()].number));
             continue;
         }
 
@@ -73,13 +128,20 @@ double Evaluator::evaluate(std::vector<Token> tokens)
                 tokenStack.emplace(TokenType::Number, static_cast<double>(static_cast<int>(b) % static_cast<int>(a)));
             }
         }
-        if (t.getType() == TokenType::Identifier)
+        if (t.getType() == TokenType::Function)
         {
             if (tokenStack.empty())
                 throw MathError("Function missing argument");
+
             double a = tokenStack.top().getNumberValue();
             tokenStack.pop();
-            tokenStack.emplace(TokenType::Number, functions[t.getValue()](a));
+
+            auto it = envr.find(t.getValue());
+            if (it == envr.end() || it->second.type != ValueType::Function)
+                throw MathError("Unknown function");
+
+            double result = it->second.func({a});
+            tokenStack.emplace(TokenType::Number, result);
         }
     }
     lastAnswer = tokenStack.top().getNumberValue();

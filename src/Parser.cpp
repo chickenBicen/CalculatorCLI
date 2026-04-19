@@ -119,7 +119,7 @@ bool isStartValue(TokenType t)
     return t == TokenType::Identifier || t == TokenType::Number || t == TokenType::LeftParen;
 }
 
-std::vector<Token> Parser::parse() const
+std::vector<Token> Parser::parseExpression(const std::vector<Token>& _tokens) const
 {
     std::stack<Token> operatorStack;
     std::vector<Token> output;
@@ -230,4 +230,25 @@ std::vector<Token> Parser::parse() const
     }
 
     return output;
+}
+
+ParserResult Parser::parse() const
+{
+    if (tokens.size() >= 3 &&
+         tokens[0].getType() == TokenType::Identifier &&
+         tokens[1].getValue() == "=")
+    {
+        ParserResult result;
+        result.isAssignment = true;
+        result.target = tokens[0].getValue();
+
+        auto rhsTokens = std::vector<Token>(tokens.begin() + 2, tokens.end());
+        result.rpn = parseExpression(rhsTokens);
+
+        return result;
+    }
+
+    ParserResult result;
+    result.rpn = parseExpression(tokens);
+    return result;
 }
