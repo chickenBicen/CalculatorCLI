@@ -9,6 +9,14 @@
 #include <stack>
 #include <vector>
 
+struct ParserResult
+{
+    std::vector<Token> rpn;
+    bool isAssignment = false;
+    std::string target;
+
+};
+
 class Parser
 {
   public:
@@ -20,7 +28,8 @@ class Parser
 
     void checkVectorOperations() const; // not yet implemented
 
-    [[nodiscard]] std::vector<Token> parse() const;
+    [[nodiscard]] ParserResult parse() const;
+    std::vector<Token> parseExpression(const std::vector<Token> &tokens) const;
 
   private:
     std::vector<Token> tokens;
