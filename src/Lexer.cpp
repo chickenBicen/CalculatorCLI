@@ -3,6 +3,7 @@
 //
 
 #include "../include/Lexer.h"
+#include "../include/Evaluator.h"
 
 #include <algorithm>
 #include <iostream>
@@ -24,6 +25,23 @@ Token Lexer::nextToken()
         {
             pos++;
             continue;
+        }
+
+        if (c == 'a')
+        {
+            if (line.substr(pos, 3) == "ans")
+            {
+                pos+=3;
+                lastToken = Token(TokenType::Number, Evaluator::lastAnswer);
+                return lastToken;
+            }
+        }
+
+        if (c=='=')
+        {
+            pos++;
+            lastToken = Token(TokenType::Equals, "=");
+            return lastToken;
         }
 
         // Number (possibly negative)
