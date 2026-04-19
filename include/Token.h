@@ -62,6 +62,23 @@ class Token
     friend std::ostream &operator<<(std::ostream &os, const Token &token);
 };
 
+inline std::ostream &operator<<(std::ostream &os, const TokenType& t)
+{
+    switch (t)
+    {
+        case TokenType::Number: os << "Number"; break;
+        case TokenType::Operator: os << "Operator"; break;
+        case TokenType::Identifier: os << "Identifier"; break;
+        case TokenType::Equals: os << "Equals"; break;
+        case TokenType::Function: os << "Function"; break;
+        case TokenType::LeftParen: os << "LeftParen"; break;
+        case TokenType::RightParen: os << "RightParen"; break;
+        case TokenType::End: os << "End"; break;
+        case TokenType::None: os << "None"; break;
+    }
+    return os;
+}
+
 inline std::ostream &operator<<(std::ostream &os, const Token &t)
 {
     os << t.value;
