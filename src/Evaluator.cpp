@@ -151,3 +151,15 @@ double Evaluator::evaluateRPN(std::vector<Token> tokens)
     }
     return lastAnswer;
 }
+
+double Evaluator::evaluate(const ParserResult& parsed)
+{
+    double result = evaluateRPN(parsed.rpn);
+
+    if (parsed.isAssignment)
+    {
+        envr[parsed.target] = Value{ValueType::Number, result};
+    }
+
+    return result;
+}
