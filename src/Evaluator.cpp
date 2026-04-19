@@ -3,6 +3,7 @@
 //
 
 #include "../include/Evaluator.h"
+#include "../include/Value.h"
 
 #include <cmath>
 #include <functional>
@@ -77,6 +78,7 @@ void checkEnvironment()
 
 double Evaluator::evaluateRPN(std::vector<Token> tokens)
 {
+
     std::stack<Token> tokenStack;
 
     for (int i = 0; i < tokens.size(); i++)
@@ -96,6 +98,10 @@ double Evaluator::evaluateRPN(std::vector<Token> tokens)
 
         if (t.getType() == TokenType::Operator)
         {
+            if (tokenStack.size() < 2)
+            {
+                throw MathError("Operator expects at least 2 arguments");
+            }
             double a = tokenStack.top().getNumberValue();
             tokenStack.pop();
             double b = tokenStack.top().getNumberValue();
@@ -115,7 +121,7 @@ double Evaluator::evaluateRPN(std::vector<Token> tokens)
             }
             else if (t.getValue() == "/")
             {
-                if (tokens[i + 1].getNumberValue() == 0)
+                if (a == 0)
                     throw MathError("Division by zero");
                 tokenStack.emplace(TokenType::Number, b / a);
             }

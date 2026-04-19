@@ -23,21 +23,19 @@ int main()
             auto tokens = lexer.tokenizeAll();
             Parser parser(tokens);
             auto parsed = parser.parse();
-
-            for (Token t : parsed)
+            for (auto Token : parsed.rpn)
             {
-                std::cout << RED << t << " ";
+                std::cout << Token <<" ";
             }
             std::cout << RESET << std::endl;
 
             Evaluator evaluator{};
 
             std::cout << GREEN << std::setprecision(15) << evaluator.evaluate(parsed) << "\n\n" << RESET;
-        }
-        catch (std::exception e)
+        }catch (std::exception &e)
         {
-            std::cout << RED << e.what() << std::endl;
-            continue;
+            std::cout << RED << e.what() << RESET << std::endl;
         }
+
     }
-}
+};
