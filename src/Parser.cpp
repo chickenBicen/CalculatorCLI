@@ -32,10 +32,6 @@ Assoc getAssociativity(const Token &t)
 
 int getPrecedence(const Token &t)
 {
-    if (t.getType() == TokenType::Function)
-    {
-        return 4;
-    }
 
     if (t.getType() != TokenType::Operator)
     {
@@ -78,30 +74,6 @@ void Parser::checkParentheses() const
     }
 }
 
-void Parser::checkOperators() const
-{
-    for (int i = 0; i < tokens.size(); i++)
-    {
-        if (tokens[i].getType() != TokenType::Operator)
-        {
-            continue;
-        }
-        if (i + 1 < tokens.size() && tokens[i + 1].getType() == TokenType::Operator)
-        {
-            throw MathError("MATH ERROR: Consecutive Operators!");
-        }
-
-        if (i == tokens.size() - 1)
-        {
-            throw MathError("MATH ERROR: Ending with an operator doesnt make sense either!");
-        }
-
-        if (i < tokens.size() - 1 && tokens[i].getValue() == "/" && tokens[i + 1].getValue() == "0")
-        {
-            throw MathError("MATH ERROR: Division by zero!");
-        }
-    }
-}
 
 bool associativityCheck(const Token &t, std::stack<Token> &operatorStack)
 {
@@ -124,13 +96,13 @@ std::vector<Token> Parser::parseExpression(const std::vector<Token>& _tokens) co
     std::stack<Token> operatorStack;
     std::vector<Token> output;
 
-    checkOperators();
     checkParentheses();
 
-    for (int i = 0; i < tokens.size(); i++)
+    for (int i = 0; i < _tokens.size(); i++)
     {
-        TokenType nextType = i < tokens.size() - 1 ? tokens[i + 1].getType() : TokenType::None;
-        Token t = tokens[i];
+        TokenType nextType = i < _tokens.size() - 1 ? _tokens[i + 1].getType() : TokenType::None;
+        TokenType previousType = i > 0 ? _tokens[i - 1].getType() : TokenType::None;
+        Token t = _tokens[i];
         if (i == 0 && t.getType() == TokenType::Operator && Evaluator::lastAnswer == 0.0)
         {
             throw ParseError("Start with operator error");
@@ -147,7 +119,7 @@ std::vector<Token> Parser::parseExpression(const std::vector<Token>& _tokens) co
             {
                 if (nextType == TokenType::LeftParen)
                 {
-                    operatorStack.push(t);
+                    operatorStack.push(Token(TokenType::Function, t.getValue()));
                     continue;
                 }
                 output.push_back(t);
@@ -156,24 +128,11 @@ std::vector<Token> Parser::parseExpression(const std::vector<Token>& _tokens) co
 
             output.push_back(t);
 
-            if (isValueLike(t.getType()) && isStartValue(nextType))
+            if ((isValueLike(t.getType()) && isStartValue(nextType)))
             {
-                operatorStack.push(t);
+                operatorStack.push(Token(TokenType::Operator, "*"));
             }
 
-            if (t.getType() == TokenType::Constant)
-            {
-                continue;
-            }
-
-            if (tokens[i + 1].getType() == TokenType::Constant)
-            {
-                operatorStack.emplace(TokenType::Operator, "*");
-            }
-        }
-        else if (t.getType() == TokenType::Function)
-        {
-            operatorStack.push(t);
         }
         else if (t.getType() == TokenType::LeftParen)
         {
@@ -194,12 +153,6 @@ std::vector<Token> Parser::parseExpression(const std::vector<Token>& _tokens) co
 
             operatorStack.pop(); // pop '('
 
-            // If a function is on top, pop it too
-            if (!operatorStack.empty() && operatorStack.top().getType() == TokenType::Function)
-            {
-                output.push_back(operatorStack.top());
-                operatorStack.pop();
-            }
         }
         else if (t.getType() == TokenType::Operator)
         {
