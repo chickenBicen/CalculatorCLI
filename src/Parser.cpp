@@ -109,6 +109,16 @@ bool associativityCheck(const Token &t, std::stack<Token> &operatorStack)
             (getAssociativity(t) == Assoc::Right && getPrecedence(operatorStack.top()) > getPrecedence(t)));
 }
 
+bool isValueLike(TokenType t)
+{
+    return t == TokenType::Identifier || t == TokenType::Number || t == TokenType::RightParen;
+}
+
+bool isStartValue(TokenType t)
+{
+    return t == TokenType::Identifier || t == TokenType::Number || t == TokenType::LeftParen;
+}
+
 std::vector<Token> Parser::parse() const
 {
     std::stack<Token> operatorStack;
@@ -119,6 +129,7 @@ std::vector<Token> Parser::parse() const
 
     for (int i = 0; i < tokens.size(); i++)
     {
+        TokenType nextType = i < tokens.size() - 1 ? tokens[i + 1].getType() : TokenType::None;
         Token t = tokens[i];
         if (i == 0 && t.getType() == TokenType::Operator && Evaluator::lastAnswer == 0.0)
         {
@@ -130,16 +141,24 @@ std::vector<Token> Parser::parse() const
             output.push_back(Token(TokenType::Number, Evaluator::lastAnswer));
         }
 
-        if (t.getType() == TokenType::Number || t.getType() == TokenType::Constant)
+        if (t.getType() == TokenType::Number || t.getType() == TokenType::Identifier)
         {
-            output.push_back(t);
-            if (tokens[i - 1].getType() == TokenType::RightParen)
+            if (t.getType() == TokenType::Identifier)
             {
-                output.push_back(Token(TokenType::Operator, "*"));
+                if (nextType == TokenType::LeftParen)
+                {
+                    operatorStack.push(t);
+                    continue;
+                }
+                output.push_back(t);
+                continue;
             }
-            else if (tokens[i + 1].getType() == TokenType::LeftParen || tokens[i + 1].getType() == TokenType::Function)
+
+            output.push_back(t);
+
+            if (isValueLike(t.getType()) && isStartValue(nextType))
             {
-                operatorStack.emplace(TokenType::Operator, "*");
+                operatorStack.push(t);
             }
 
             if (t.getType() == TokenType::Constant)

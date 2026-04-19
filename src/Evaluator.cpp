@@ -10,23 +10,32 @@
 #include <string>
 #include <unordered_map>
 
-
 #include "../Custom_Errors.h"
 
 double Evaluator::lastAnswer = 0.0;
 
 std::unordered_map<std::string, std::function<double(double)>> functions = {
-    {"sqrt", sqrt}, {"sin", sin}, {"cos", cos}, {"log", log10}, {"ln", log}};
+    {"sqrt", sqrt}, {"sin", sin},     {"cos", cos},     {"log", log10},
+    {"ln", log},    {"arcsin", asin}, {"arccos", acos}, {"arctan", atan}};
+
+std::unordered_map<std::string, double> constants = {{"pi", 3.141592653589793}, {"e", 2.718281828459045}};
 
 double Evaluator::evaluate(std::vector<Token> tokens)
 {
     std::stack<Token> tokenStack;
 
-    for (Token t : tokens)
+    for (int i =0; i < tokens.size(); i++)
     {
-        if (t.getType() == TokenType::Number || t.getType() == TokenType::Constant)
+        Token t = tokens[i];
+        if (t.getType() == TokenType::Number)
         {
             tokenStack.push(t);
+            continue;
+        }
+
+        if (constants.find(t.getValue()) != constants.end())
+        {
+            tokenStack.push(Token(TokenType::Number, constants[t.getValue()]));
             continue;
         }
 
@@ -51,6 +60,7 @@ double Evaluator::evaluate(std::vector<Token> tokens)
             }
             else if (t.getValue() == "/")
             {
+                if (tokens[i+1].getNumberValue() == 0) throw MathError("Division by zero");
                 tokenStack.emplace(TokenType::Number, b / a);
             }
             else if (t.getValue() == "^")
@@ -62,13 +72,18 @@ double Evaluator::evaluate(std::vector<Token> tokens)
                 tokenStack.emplace(TokenType::Number, static_cast<double>(static_cast<int>(b) % static_cast<int>(a)));
             }
         }
-        if (t.getType() == TokenType::Function)
+        if (t.getType() == TokenType::Identifier)
         {
+            if (tokenStack.empty()) throw MathError("Function missing argument");
             double a = tokenStack.top().getNumberValue();
             tokenStack.pop();
             tokenStack.emplace(TokenType::Number, functions[t.getValue()](a));
         }
     }
     lastAnswer = tokenStack.top().getNumberValue();
-    return tokenStack.top().getNumberValue();
+    if (lastAnswer < 1e-12)
+    {
+        lastAnswer = 0.0;
+    }
+    return lastAnswer;
 }

@@ -9,9 +9,6 @@
 #include <stdexcept>
 #include <unordered_map>
 #include <algorithm>
-
-std::unordered_map<std::string, double> constants{{"pi", 3.141592653589793}, {"e", 2.718281828459045}};
-
 Token Lexer::nextToken()
 {
     //TODO make support for vectors using vectmatlib and <> notation
@@ -55,77 +52,46 @@ Token Lexer::nextToken()
             return lastToken;
         }
 
-        if (line.substr(pos, 2) == "pi")
+        if (isalpha(c))
         {
-            pos += 2;
-            lastToken = Token(TokenType::Constant, constants["pi"]);
-            return lastToken;
-        }
+            std::string ident;
 
-        if (line.substr(pos, 1) == "e")
-        {
-            pos += 1;
-            lastToken = Token(TokenType::Constant, constants["e"]);
-            return lastToken;
-        }
-
-        // Functions
-        if (line.substr(pos, 4) == "sqrt")
-        {
-            pos += 4;
-            lastToken = Token(TokenType::Function, "sqrt");
-            return lastToken;
-        }
-
-        if (line.substr(pos, 3) == "sin")
-        {
-            pos += 3;
-            lastToken = Token(TokenType::Function, "sin");
-            return lastToken;
-        }
-
-        if (line.substr(pos, 3) == "cos")
-        {
-            pos += 3;
-            lastToken = Token(TokenType::Function, "cos");
-            return lastToken;
-        }
-
-        if (line.substr(pos, 3) == "log")
-        {
-            pos += 3;
-            lastToken = Token(TokenType::Function, "log");
-            return lastToken;
-        }
-
-        if (line.substr(pos, 2) == "ln")
-        {
-            pos += 2;
-            lastToken = Token(TokenType::Function, "ln");
-            return lastToken;
-        }
-
-        if (c == '<')
-        {
-            size_t start = pos;
-
-            auto it = std::find(line.begin() + pos + 1, line.end(), '>');
-            if (it == line.end())
+            while (pos < line.length() && ( isalnum(line[pos]) || line[pos] == '_'))
             {
-                throw std::runtime_error("LEXER ERROR: INVALID VECTOR GROUPINGS");
+                ident += line[pos];
+                pos++;
             }
 
-            size_t end = std::distance(line.begin(), it);
-
-            // Extract everything inside < >
-            std::string contents = line.substr(start + 1, end - start - 1);
-
-            // Move past the closing '>'
-            pos = end + 1;
-
-            lastToken = Token(TokenType::Vector, contents);
+            lastToken = Token(TokenType::Identifier, ident);
             return lastToken;
         }
+
+        // if (line.substr(pos, 2) == "pi")
+        // {
+        //     pos += 2;
+        //     lastToken = Token(TokenType::Constant, constants["pi"]);
+        //     return lastToken;
+        // }
+        //
+        // if (line.substr(pos, 1) == "e")
+        // {
+        //     pos += 1;
+        //     lastToken = Token(TokenType::Constant, constants["e"]);
+        //     return lastToken;
+        // }
+        //
+        // // Functions
+        // std::string str;
+        // for (auto i = pos; i < pos+7; i++)
+        // {
+        //     str += line[i];
+        //     if (std::find(functionNames.begin(), functionNames.end(), str) != functionNames.end())
+        //     {
+        //         pos += str.length();
+        //         lastToken = Token(TokenType::Function, str);
+        //         return lastToken;
+        //     }
+        // }
 
         // Operators
         if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '%')
