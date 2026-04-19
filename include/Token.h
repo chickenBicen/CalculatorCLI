@@ -81,7 +81,7 @@ inline std::ostream &operator<<(std::ostream &os, const TokenType& t)
 
 inline std::ostream &operator<<(std::ostream &os, const Token &t)
 {
-    os << t.value;
+    os << t.getType() << ":" << t.getValue();
     return os;
 }
 
