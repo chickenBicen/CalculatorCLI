@@ -24,7 +24,7 @@ double Evaluator::evaluate(std::vector<Token> tokens)
 {
     std::stack<Token> tokenStack;
 
-    for (int i =0; i < tokens.size(); i++)
+    for (int i = 0; i < tokens.size(); i++)
     {
         Token t = tokens[i];
         if (t.getType() == TokenType::Number)
@@ -60,7 +60,8 @@ double Evaluator::evaluate(std::vector<Token> tokens)
             }
             else if (t.getValue() == "/")
             {
-                if (tokens[i+1].getNumberValue() == 0) throw MathError("Division by zero");
+                if (tokens[i + 1].getNumberValue() == 0)
+                    throw MathError("Division by zero");
                 tokenStack.emplace(TokenType::Number, b / a);
             }
             else if (t.getValue() == "^")
@@ -74,7 +75,8 @@ double Evaluator::evaluate(std::vector<Token> tokens)
         }
         if (t.getType() == TokenType::Identifier)
         {
-            if (tokenStack.empty()) throw MathError("Function missing argument");
+            if (tokenStack.empty())
+                throw MathError("Function missing argument");
             double a = tokenStack.top().getNumberValue();
             tokenStack.pop();
             tokenStack.emplace(TokenType::Number, functions[t.getValue()](a));

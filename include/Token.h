@@ -13,10 +13,9 @@
 enum class TokenType
 {
     Number,
-    Constant,
     Identifier,
+    Equals,
     Operator,
-    Function,
     LeftParen,
     RightParen,
     End,

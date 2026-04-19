@@ -18,7 +18,7 @@ class Parser
 
     void checkOperators() const;
 
-    void checkVectorOperations() const;     //not yet implemented
+    void checkVectorOperations() const; // not yet implemented
 
     [[nodiscard]] std::vector<Token> parse() const;
 

@@ -4,14 +4,14 @@
 
 #include "../include/Lexer.h"
 
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
 #include <unordered_map>
-#include <algorithm>
 Token Lexer::nextToken()
 {
-    //TODO make support for vectors using vectmatlib and <> notation
+    // TODO make support for vectors using vectmatlib and <> notation
     std::string num;
     // Keep track of last token type (initially None)
     TokenType lastType = lastToken.getType(); // assume lastToken is a member variable
@@ -52,11 +52,12 @@ Token Lexer::nextToken()
             return lastToken;
         }
 
+        //makes identifiers from things like sin, pi, x, x1, _x, abc_function, f, etc.
         if (isalpha(c))
         {
             std::string ident;
 
-            while (pos < line.length() && ( isalnum(line[pos]) || line[pos] == '_'))
+            while (pos < line.length() && (isalnum(line[pos]) || line[pos] == '_'))
             {
                 ident += line[pos];
                 pos++;
@@ -65,33 +66,6 @@ Token Lexer::nextToken()
             lastToken = Token(TokenType::Identifier, ident);
             return lastToken;
         }
-
-        // if (line.substr(pos, 2) == "pi")
-        // {
-        //     pos += 2;
-        //     lastToken = Token(TokenType::Constant, constants["pi"]);
-        //     return lastToken;
-        // }
-        //
-        // if (line.substr(pos, 1) == "e")
-        // {
-        //     pos += 1;
-        //     lastToken = Token(TokenType::Constant, constants["e"]);
-        //     return lastToken;
-        // }
-        //
-        // // Functions
-        // std::string str;
-        // for (auto i = pos; i < pos+7; i++)
-        // {
-        //     str += line[i];
-        //     if (std::find(functionNames.begin(), functionNames.end(), str) != functionNames.end())
-        //     {
-        //         pos += str.length();
-        //         lastToken = Token(TokenType::Function, str);
-        //         return lastToken;
-        //     }
-        // }
 
         // Operators
         if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '%')
